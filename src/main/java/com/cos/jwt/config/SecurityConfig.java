@@ -1,12 +1,17 @@
 package com.cos.jwt.config;
 
+import com.cos.jwt.config.filter.MyFilterA;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.ForceEagerSessionCreationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @RequiredArgsConstructor
@@ -18,6 +23,10 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        // 스프링 필터체인 중 ForceEagerSessionCreationFilter 전에 나의 커스텀 필터를 걸어준다는 뜻.
+        // 가장 위의 Force ~ Filter 이전에 MyFilterA 가 실행되도록 설정 (커스텀 필터로 토큰에의한 보안을 걸어주기 위해)
+        httpSecurity.addFilterBefore(new MyFilterA(), ForceEagerSessionCreationFilter.class);
+
         httpSecurity.csrf().disable();
 
         // 세션 로그인 방식을 쓰지 않겠다고 선언한 것
